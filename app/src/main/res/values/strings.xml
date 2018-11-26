@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Broovy</string>
+    <string name="button">Button</string>
+    <string name="switch_me">Switch me</string>
+</resources>
