@@ -68,7 +68,7 @@ public class HopTimerActivity extends AppCompatActivity {
         timerRunning = false;
     }
 
-    private void startTimer() { //todo - timer konczy prace na 1 sekundzie zamiast na 0, naprawic
+    private void startTimer() {
         timer = new CountDownTimer(timeLeftInMs, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
