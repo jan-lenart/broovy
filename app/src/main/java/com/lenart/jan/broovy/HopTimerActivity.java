@@ -3,9 +3,16 @@ package com.lenart.jan.broovy;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.lenart.jan.broovy.model.HopViewItem;
+import com.lenart.jan.broovy.model.bootstrap.HopBootstrap;
+
+import java.util.ArrayList;
 
 public class HopTimerActivity extends AppCompatActivity {
 
@@ -19,11 +26,14 @@ public class HopTimerActivity extends AppCompatActivity {
 
     private CountDownTimer timer;
     private boolean timerRunning;
-    private long timeLeftInMs = 6000;
+    private long timeLeftInMs = MILIS_IN_HOUR;
 
     private TextView timerText;
     private Button timerStartButton;
     private Button resetButton;
+    private Button removeButton;
+
+    private ArrayList<HopViewItem> hopViewItems;
 
 
     @Override
@@ -31,6 +41,33 @@ public class HopTimerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initRecyclerView();
+        initTimer();
+
+    }
+
+    private void initRecyclerView() {
+        HopBootstrap bootstrap = new HopBootstrap();
+        hopViewItems = bootstrap.getItems();
+
+        RecyclerView recyclerView = findViewById(R.id.hops_list);
+        final RecyclerViewAdapter adapter = new RecyclerViewAdapter(hopViewItems, this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        removeButton = findViewById(R.id.remove_button);
+        removeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!hopViewItems.isEmpty()) {
+                    hopViewItems.remove(hopViewItems.size()-1);
+                    adapter.notifyItemRemoved(hopViewItems.size());
+                }
+            }
+        });
+    }
+
+    private void initTimer() {
         timerText = findViewById(R.id.timer_text);
         timerStartButton = findViewById(R.id.timer_button);
         resetButton = findViewById(R.id.reset_button);
@@ -45,9 +82,9 @@ public class HopTimerActivity extends AppCompatActivity {
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                timeLeftInMs = 6000;
+                if (timerRunning) stopTimer();
+                timeLeftInMs = MILIS_IN_HOUR;
                 updateTimer();
-                resetButton.setEnabled(false);
             }
         });
 
@@ -80,7 +117,6 @@ public class HopTimerActivity extends AppCompatActivity {
             public void onFinish() {
                 updateTimer();
                 timerStartButton.setText("START");
-                resetButton.setEnabled(true);
                 timerRunning = false;
 
             }
